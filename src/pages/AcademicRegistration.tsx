@@ -99,6 +99,83 @@ const AcademicRegistration = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validate required fields
+    const requiredFields = {
+      firstName: "الاسم الأول",
+      lastName: "اسم العائلة", 
+      birthDate: "تاريخ الميلاد",
+      email: "البريد الإلكتروني",
+      guardianName: "اسم ولي الأمر",
+      guardianPhone: "هاتف ولي الأمر",
+      educationStage: "المرحلة التعليمية",
+      educationLevel: "المستوى الدراسي"
+    };
+
+    // Check if any required field is empty
+    for (const [field, fieldName] of Object.entries(requiredFields)) {
+      if (!formData[field as keyof AcademicStudentData] || formData[field as keyof AcademicStudentData] === "") {
+        toast({
+          title: "خطأ في البيانات",
+          description: `يرجى تعبئة حقل ${fieldName}`,
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+
+    // Check if at least one phone number is provided
+    if (!formData.phones[0] || formData.phones[0].trim() === "") {
+      toast({
+        title: "خطأ في البيانات", 
+        description: "يرجى إدخال رقم هاتف واحد على الأقل",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check if at least one subject is selected
+    if (formData.subjects.length === 0) {
+      toast({
+        title: "خطأ في البيانات",
+        description: "يرجى اختيار مادة واحدة على الأقل للدراسة",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        title: "خطأ في البيانات",
+        description: "يرجى إدخال بريد إلكتروني صالح",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate phone numbers (must be 10 digits)
+    const phoneRegex = /^[0-9]{10}$/;
+    for (const phone of formData.phones) {
+      if (phone && !phoneRegex.test(phone)) {
+        toast({
+          title: "خطأ في البيانات",
+          description: "يرجى إدخال أرقام هواتف صحيحة (10 أرقام)",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+
+    if (!phoneRegex.test(formData.guardianPhone)) {
+      toast({
+        title: "خطأ في البيانات", 
+        description: "يرجى إدخال رقم هاتف ولي الأمر صحيح (10 أرقام)",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     const regNumber = `ACD${Date.now().toString().slice(-6)}`;
     setRegistrationNumber(regNumber);
     
